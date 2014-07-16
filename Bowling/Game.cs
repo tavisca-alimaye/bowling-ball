@@ -23,56 +23,85 @@ namespace Bowling
 
         public int GetScore()
         {
-            int bonus = 0;
-            int remaining = 20;
-            int current;
-            bool strike = false;
-            int[] frame = new int[2];
-            for (current = 0; current < _rolls.Count; current++)
-            {
-                
-                if (_rolls[current] == 10 && remaining > 0) 
-                {
-                    strike = false;    
-                    StikeOrSpare(_rolls, current, ref strike);
-                    if (strike == true)
-                    {
-                        bonus += _rolls[current + 1] + _rolls[current + 2] + _rolls[current];
-                        remaining -= 2;
-                        if (remaining <= 0)
-                            break;
-                    }
-                    else
-                    {
-                        bonus += _rolls[current + 1] + _rolls[current];
-                        remaining -= 1;
-                    }
-                }
-                else
-                {
-                    _score += _rolls[current];
-                    remaining--;
-                }
-            }
-            for (current = 0; current < _rolls.Count-1; current += 2)
-            {
-                if ((_rolls[current] + _rolls[current + 1]) == 10 && _rolls[current] != 10)
-                {
-                    bonus += _rolls[current + 2];
-                }
-            }
-                _score += bonus;
+            List<int> strikeIndex = new List<int>();
+            List<int> spareIndex = new List<int>();
+            int lastframeIndex = _rolls.Count();
+
+            GetIndexStrikeAndSpare(_rolls, ref lastframeIndex, strikeIndex, spareIndex);
+
+            _score = GetTotal(lastframeIndex, _rolls, strikeIndex, spareIndex);
+                        
             return _score;
         }
 
-        private void StikeOrSpare(List<int> _rolls, int current, ref bool strike)
+        private int GetTotal(int lastframeIndex, List<int> _rolls, List<int> strikeIndex, List<int> spareIndex)
         {
-            if (current % 2 == 0)
-                strike = true;
-            else
-                strike = false;
+            int score = 0;
+            int bonus = 0;
+            int current;
+            for (int i = 0; i < lastframeIndex; i++)
+            {
+                score += _rolls[i];
+            }
+            for (int i = 0; i < strikeIndex.Count; i++)
+            {
+                current = strikeIndex[i];
+                bonus += _rolls[current + 1] + _rolls[current + 2];
+            }
+            for (int i = 0; i < spareIndex.Count; i++)
+            {
+                current = spareIndex[i];
+                bonus += _rolls[current + 1];
+            }
+
+            return score + bonus;
         }
 
+        private void GetIndexStrikeAndSpare(List<int> _rolls, ref int lastframeIndex, List<int> strikeIndex, List<int> spareIndex)
+        {
+            lastframeIndex = _rolls.Count;
+            int count = 0;
+            int frames = 0;
+            int roll1, roll2;
+            int len = _rolls.Count;
+            for (int i = 0; i < len; i += 2)
+            {
+                roll1 = _rolls[i];
+                roll2 = _rolls[i + 1];
+                if (frames < 10)
+                {
+                    if (roll1 == 10)
+                    {
+                        strikeIndex.Add(i);
+                        frames += 1;
+                        i--;
+                        count++;
+                    }
+                    else if (roll2 == 10)
+                    {
+                        spareIndex.Add(i + 1);
+                        frames += 1;
+                        count += 2;
+                    }
+                    else if ((roll1 + roll2) == 10)
+                    {
+                        spareIndex.Add(i + 1);
+                        frames += 1;
+                        count += 2;
+                    }
+                    else
+                    {
+                        frames += 1;
+                        count += 2;
+                    }
+                }
+                if (frames == 10)
+                {
+                    lastframeIndex = count;
+                    break;
+                }
+            }
+        }
         
 
     }

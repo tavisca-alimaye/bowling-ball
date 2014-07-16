@@ -163,10 +163,51 @@ namespace BowlingFixtures
             g.Roll(10);
 
             g.Roll(4);
+            g.Roll(5);
+
+            Assert.AreEqual(99, g.GetScore());
+        }
+
+        [TestMethod]
+        public void AllSpares()
+        {
+            Game g = new Game();
+
+            g.Roll(7);
+            g.Roll(3);
+
+            g.Roll(7);
+            g.Roll(3);
+
+            g.Roll(7);
+            g.Roll(3);
+
+            g.Roll(5);
+            g.Roll(5);
+
+            g.Roll(7);
+            g.Roll(3);
+
+            g.Roll(7);
+            g.Roll(3);
+
+            g.Roll(7);
+            g.Roll(3);
+
+            g.Roll(7);
+            g.Roll(3);
+
+            g.Roll(7);
+            g.Roll(3);
+
+            g.Roll(7);
+            g.Roll(3);
+
             g.Roll(6);
 
-            Assert.AreEqual(100, g.GetScore());
+            Assert.AreEqual(167, g.GetScore());
         }
+
 
     }
 }
